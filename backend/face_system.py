@@ -220,7 +220,47 @@ class UltraSimpleFaceSystem:
         else:
             self._log_action("UNKNOWN", None, confidence)
             return None, confidence
-    
+
+    def delete_person(self, name: str) -> Tuple[bool, str]:
+        """Supprime une personne de la base et du système de fichiers"""
+        try:
+            conn = sqlite3.connect(self.db_path)
+            cursor = conn.cursor()
+            
+            # Récupérer le chemin de l'image avant suppression
+            cursor.execute("SELECT image_path FROM persons WHERE name = ?", (name,))
+            row = cursor.fetchone()
+            
+            if not row:
+                conn.close()
+                return False, f"La personne '{name}' n'existe pas"
+            
+            # Supprimer de la base
+            cursor.execute("DELETE FROM persons WHERE name = ?", (name,))
+            cursor.execute("DELETE FROM logs WHERE person_name = ?", (name,))
+            
+            conn.commit()
+            conn.close()
+            
+            # Supprimer les fichiers images
+            image_path = row[0]
+            if image_path and os.path.exists(image_path):
+                try:
+                    os.remove(image_path)
+                except: pass
+            
+            face_path = str(self.registered_faces_dir / f"{name}.jpg")
+            if os.path.exists(face_path):
+                try:
+                    os.remove(face_path)
+                except: pass
+            
+            self._log_action("DELETE", name, 100)
+            return True, f"Personne '{name}' supprimée avec succès"
+            
+        except Exception as e:
+            return False, f"Erreur lors de la suppression: {str(e)}"
+
     def list_persons(self) -> List[dict]:
         """Liste toutes les personnes"""
         conn = sqlite3.connect(self.db_path)

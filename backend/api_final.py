@@ -130,6 +130,15 @@ def get_stats():
     """Retourne les statistiques"""
     return face_system.get_stats()
 
+@app.delete("/person/{name}")
+async def delete_person(name: str):
+    """Supprime une personne"""
+    success, message = face_system.delete_person(name)
+    if success:
+        return {"success": True, "message": message}
+    else:
+        raise HTTPException(status_code=404, detail=message)
+
 @app.get("/test")
 def test():
     """Endpoint de test"""
