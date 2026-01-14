@@ -1,0 +1,19 @@
+# Dépendances principales
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+python-multipart==0.0.6
+
+# CHOIX UN : face-recognition (précis)
+face-recognition==1.3.0
+dlib==19.24.2
+cmake==3.27.7
+
+# CHOIX DEUX : DeepFace (plus simple)
+# deepface==0.0.79
+
+# Base de données & utils
+sqlite3
+numpy==1.24.3
+opencv-python==4.8.1.78
+python-jose[cryptography]==3.3.0  # Pour JWT
+passlib[bcrypt]==1.7.4  # Pour hash passwords
